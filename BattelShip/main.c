@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include "Logic.h"
+
 int main() {
-    printf("Hello, World!\n");
-    tezt();
+
+    setupGame(0, 1);
+    printBoard(0);
+
     return 0;
 }
