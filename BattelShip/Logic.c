@@ -8,4 +8,5 @@
 
 void tezt() {
     printf("alkdjaslkdja");
+    //Nice comment
 }
