@@ -1,6 +1,8 @@
 # inteli J
 .xml
 .idea
+cmake-build-debug/*
+cmakeLists.txt
 
 
 
