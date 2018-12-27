@@ -8,20 +8,26 @@
 #define BOARD_WITH 10
 #define BOARD_HIGHT 10
 
-char MS;  // holds value if master or slave
+//char MS;  // holds value if master or slave
 
-extern char player1Ships[BOARD_WITH][BOARD_HIGHT];
-extern char player1Shots[BOARD_WITH][BOARD_HIGHT];
+enum GAMESTATUS{OVER = 0, RUNNING = 1, READY};
 
-extern char player2Ships[BOARD_WITH][BOARD_HIGHT];
-extern char player2Shots[BOARD_WITH][BOARD_HIGHT];
+
+
+extern char ships[2][BOARD_WITH][BOARD_HIGHT];
+extern char shots[2][BOARD_WITH][BOARD_HIGHT];
+
 
 
 void setupGame(int b1, int b2);
 
 void printBoard(int choice);
 
-
+int runGame();
+int playerTurn(int player);
+void getCoordinates(char * shot);
+int shotLegal(int player, char * shot);
+int shootAt(int player, char * shot);
 
 
 #endif //BATTELSHIP_LOGIC_H
