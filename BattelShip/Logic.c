@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <mem.h>
 #include "Logic.h"
 #include "Boards.h"
 #define DEBUG
@@ -14,6 +15,12 @@ enum GAMESTATUS GAME;
  */
 void setupGame(int b1, int b2) {
 
+    memcpy(shots,zeros,BOARD_WITH*BOARD_WITH);
+    memcpy(shots+1,zeros,BOARD_WITH*BOARD_WITH);
+    memcpy(ships,boards+b1,BOARD_WITH*BOARD_WITH);
+    memcpy(ships+1,boards+b2,BOARD_WITH*BOARD_WITH);
+
+    /*
     for (int i = 0; i < BOARD_WITH; ++i) {
         for (int j = 0; j < BOARD_HIGHT; ++j) {
             ships[0][i][j] = boards[b1][i][j];
@@ -22,6 +29,7 @@ void setupGame(int b1, int b2) {
             shots[1][i][j] = zeros[i][j];
         }
     }
+    */
 
     GAME = READY;
 

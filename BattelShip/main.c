@@ -11,7 +11,7 @@ int main() {
 
     //pthread_create(&thread, NULL, func, NULL );
 
-    setupGame(0, 0);
+    setupGame(4,4);
     printBoard(0);
     int winner = runGame();
     printf("Player %d is the WINNER!", winner);
