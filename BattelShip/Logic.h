@@ -22,9 +22,10 @@ extern char shots[2][BOARD_WITH][BOARD_HIGHT];
 void setupGame(int b1, int b2);
 
 void printBoard(int choice);
+void printField(char c);
 
 int runGame();
-int playerTurn(int player);
+int playerTurn(int player, int shipsLeft);
 void getCoordinates(char * shot);
 int shotLegal(int player, char * shot);
 int shootAt(int player, char * shot);

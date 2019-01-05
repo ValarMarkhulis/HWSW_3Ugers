@@ -1,0 +1,16 @@
+0  Blank vand
+1   Båd (op)
+2   Båd (højre)
+3  Båd (Ned)
+4  Båd (Venstre)
+5  Båd (Horisontalt)
+6  Båd (Vandret)
+7   Skudt på vand
+8   Skudt båd (op)
+9   Skudt båd (højre)
+10   Skudt båd (Ned)
+11   Skudt båd (Venstre)
+12   Skudt båd (Horisontalt)
+13   Skudt båd (Vandret)
+
+Evt.. 10 til A-J og 0-9 samt 1 til blank kant.

@@ -1,0 +1,7 @@
+- Hit giver tur igen
+- Opdater båd felter
+- Opdater hit logik så det ikke er et gyldigt skud på værdier i mellem 0 og 6, og det er gyldigt på 7 til 13. (se Spirits)
+- 0 er vand
+- 1-6 er både
+- 7 er miss (@)
+- 8-13 er Hit (X)

@@ -3,8 +3,8 @@
 #include "Logic.h"
 #include "Boards.h"
 #define DEBUG
-char ships[2][BOARD_WITH][BOARD_HIGHT];
-char shots[2][BOARD_WITH][BOARD_HIGHT];
+char ships[2][BOARD_HIGHT][BOARD_WITH];
+char shots[2][BOARD_HIGHT][BOARD_WITH];
 enum GAMESTATUS GAME;
 
 /**
@@ -13,8 +13,6 @@ enum GAMESTATUS GAME;
  * @param b2 Player two's board choice
  */
 void setupGame(int b1, int b2) {
-
-
 
     for (int i = 0; i < BOARD_WITH; ++i) {
         for (int j = 0; j < BOARD_HIGHT; ++j) {
@@ -43,11 +41,12 @@ void printBoard(int choice) {
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ", ships[0][i][j]);
+                printField(ships[0][i][j]);
+
             }
             printf("   ");
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ",ships[1][i][j]);
+                printField(ships[1][i][j]);
             }
             printf(" %d\n",i);
         }
@@ -61,11 +60,11 @@ void printBoard(int choice) {
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ",shots[0][i][j]);
+                printField(shots[0][i][j]);
             }
             printf("   ");
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ",shots[1][i][j]);
+                printField(shots[1][i][j]);
             }
             printf(" %d\n",i);
         }
@@ -82,7 +81,7 @@ void printBoard(int choice) {
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ",ships[0][i][j]);
+                printField(ships[0][i][j]);
             }
             printf("\n");
          }
@@ -96,7 +95,7 @@ void printBoard(int choice) {
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ", shots[0][i][j]);
+                printField(shots[0][i][j]);
             }
             printf("\n");
         }
@@ -113,7 +112,7 @@ void printBoard(int choice) {
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ", ships[1][i][j]);
+                printField(ships[1][i][j]);
             }
             printf("\n");
         }
@@ -126,8 +125,7 @@ void printBoard(int choice) {
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
             for (int j = 0; j < BOARD_WITH; ++j) {
-                printf("%c ", shots[1][i][j]);
-            }
+                printField(shots[1][i][j]);            }
             printf("\n");
         }
 
@@ -140,6 +138,20 @@ void printBoard(int choice) {
 }
 
 /**
+ * Prints a single charecter for the playingfield..
+ * @param c
+ */
+void printField(char c) {
+    if(c < '7') {
+        printf("%c ",c);
+    } else if(c == '7') {
+        printf("@ ");
+    } else {
+        printf("X ");
+    }
+}
+
+/**
  * This function starts the game, and when it exits the game is over.
  */
 int runGame() {
@@ -147,9 +159,9 @@ int runGame() {
     int shipsLeft[2] = {17,17};
     while(GAME == RUNNING) {
         if(GAME == RUNNING) {
-            printf("\n\nPlayer 1: ------------------------------------\n");
-            printf("The enemy have %d ship parts left.\n", shipsLeft[1]);
-            if(playerTurn(1) == 1) {
+
+
+            while(playerTurn(1 ,shipsLeft[1]) == 1) {
                 shipsLeft[1]--;
                 if (shipsLeft[1] == 0) {
                     GAME = OVER;
@@ -158,9 +170,8 @@ int runGame() {
             }
         }
         if(GAME == RUNNING) {
-            printf("\n\nPlayer 2: ------------------------------------\n");
-            printf("The enemy have %d ship parts left.\n", shipsLeft[0]);
-            if (playerTurn(2) == 1) {
+
+            while(playerTurn(2, shipsLeft[0]) == 1) {
                 shipsLeft[0]--;
                 if (shipsLeft[0] == 0) {
                     GAME = OVER;
@@ -177,7 +188,9 @@ int runGame() {
  * @param player Who is playing? 1 or 2.
  * @return 1 if the player hits a ship else 0.
  */
-int playerTurn(int player){
+int playerTurn(int player, int shipsLeft){
+    printf("\n\nPlayer %d: ------------------------------------\n",player);
+    printf("The enemy have %d ship parts left.\n", shipsLeft);
     char shot[2] = {'0','0'};
     printBoard(player);
     do {
@@ -270,12 +283,15 @@ int shootAt(int player, char *shot) {
         enemy = 0;
     }
 
-    shots[player][shot_y][shot_x] = '1';
+    shots[player][shot_y][shot_x] = '7';
 
-    if (ships[enemy][shot_y][shot_x] == '1') {
-        ships[enemy][shot_y][shot_x] = 'X';
+    if (ships[enemy][shot_y][shot_x] >= '1' &&  ships[enemy][shot_y][shot_x] <= '6') {
+        ships[enemy][shot_y][shot_x] +=7;
+        shots[player][shot_y][shot_x] = 'X';
         return 1;
     } else {
+        ships[enemy][shot_y][shot_x] = '7';
+        shots[player][shot_y][shot_x] = '7';
         return 0;
     }
 
