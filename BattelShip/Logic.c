@@ -4,24 +4,28 @@
 #include "Logic.h"
 #include "Boards.h"
 #define DEBUG
-char ships[2][BOARD_HIGHT][BOARD_WITH];
-char shots[2][BOARD_HIGHT][BOARD_WITH];
+char ships[2][BOARD_HIGHT][BOARD_WIDTH];
+char shots[2][BOARD_HIGHT][BOARD_WIDTH];
 enum GAMESTATUS GAME;
+FILE *outStream;
 
 /**
  * setups 2 standard boards and all zeros for shots.
  * @param b1 Player one's board choice
  * @param b2 Player two's board choice
  */
-void setupGame(int b1, int b2) {
+void setupGame(int b1, int b2, FILE *outStream) {
 
-    memcpy(shots,zeros,BOARD_WITH*BOARD_WITH);
-    memcpy(shots+1,zeros,BOARD_WITH*BOARD_WITH);
-    memcpy(ships,boards+b1,BOARD_WITH*BOARD_WITH);
-    memcpy(ships+1,boards+b2,BOARD_WITH*BOARD_WITH);
+    memcpy(shots, zeros, BOARD_WIDTH * BOARD_WIDTH);
+    memcpy(shots + 1, zeros, BOARD_WIDTH * BOARD_WIDTH);
+    memcpy(ships, boards + b1, BOARD_WIDTH * BOARD_WIDTH);
+    memcpy(ships + 1, boards + b2, BOARD_WIDTH * BOARD_WIDTH);
+    fprintf(outStream, "Player 1 uses board %d\n"
+                       "Player 2 uses board %d\n", b1, b2);
+    fflush(outStream);
 
     /*
-    for (int i = 0; i < BOARD_WITH; ++i) {
+    for (int i = 0; i < BOARD_WIDTH; ++i) {
         for (int j = 0; j < BOARD_HIGHT; ++j) {
             ships[0][i][j] = boards[b1][i][j];
             ships[1][i][j] = boards[b2][i][j];
@@ -48,37 +52,37 @@ void printBoard(int choice) {
         printf("Ship boards\n");
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(ships[0][i][j]);
 
             }
             printf("   ");
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(ships[1][i][j]);
             }
             printf(" %d\n",i);
         }
         for (int k = 0; k < 2; ++k) {
             printf("   ");
-            for (int i = 0; i < BOARD_WITH; ++i) {
+            for (int i = 0; i < BOARD_WIDTH; ++i) {
                 printf("%c ",alfa[i]);
             }
         }
         printf("\n\nShot boards\n");
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(shots[0][i][j]);
             }
             printf("   ");
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(shots[1][i][j]);
             }
             printf(" %d\n",i);
         }
         for (int k = 0; k < 2; ++k) {
             printf("   ");
-            for (int i = 0; i < BOARD_WITH; ++i) {
+            for (int i = 0; i < BOARD_WIDTH; ++i) {
                 printf("%c ",alfa[i]);
             }
         }
@@ -88,13 +92,13 @@ void printBoard(int choice) {
         printf("Player one's Ship board\n");
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(ships[0][i][j]);
             }
             printf("\n");
          }
         printf("   ");
-        for (int i = 0; i < BOARD_WITH; ++i) {
+        for (int i = 0; i < BOARD_WIDTH; ++i) {
             printf("%c ",alfa[i]);
         }
 
@@ -102,14 +106,14 @@ void printBoard(int choice) {
 
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(shots[0][i][j]);
             }
             printf("\n");
         }
 
         printf("   ");
-        for (int i = 0; i < BOARD_WITH; ++i) {
+        for (int i = 0; i < BOARD_WIDTH; ++i) {
             printf("%c ",alfa[i]);
         }
         printf("\n");
@@ -119,26 +123,26 @@ void printBoard(int choice) {
         printf("Player two's Ship board\n");
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(ships[1][i][j]);
             }
             printf("\n");
         }
         printf("   ");
-        for (int i = 0; i < BOARD_WITH; ++i) {
+        for (int i = 0; i < BOARD_WIDTH; ++i) {
             printf("%c ",alfa[i]);
         }
         printf("\n\nPlayer two's shot boards\n");
 
         for (int i = 0; i < BOARD_HIGHT; ++i) {
             printf("%d  ",i);
-            for (int j = 0; j < BOARD_WITH; ++j) {
+            for (int j = 0; j < BOARD_WIDTH; ++j) {
                 printField(shots[1][i][j]);            }
             printf("\n");
         }
 
         printf("   ");
-        for (int i = 0; i < BOARD_WITH; ++i) {
+        for (int i = 0; i < BOARD_WIDTH; ++i) {
             printf("%c ",alfa[i]);
         }
     }
@@ -162,26 +166,49 @@ void printField(char c) {
 /**
  * This function starts the game, and when it exits the game is over.
  */
-int runGame() {
+int runGame(FILE *outStreamen) {
+    outStream = outStreamen;
     GAME = RUNNING;
+    fprintf(outStream, "Game is setup\n");
+    fflush(outStream);
     int shipsLeft[2] = {17,17};
+
+    //Initialize the cursors
+    cursorP1.x = 0;
+    cursorP1.y = 0;
+    //cursorP1.pressed = 0;
+    cursorP2.x = 0;
+    cursorP2.y = 0;
+    //cursorP2.pressed = 0;
+
     while(GAME == RUNNING) {
         if(GAME == RUNNING) {
-
+            fprintf(outStream, "It is Player 1's turn\n");
+            fflush(outStream);
 
             while(playerTurn(1 ,shipsLeft[1]) == 1) {
+                fprintf(outStream, "\tPlayer 1 hit a ship and there is %d ships remaining\n", shipsLeft[1]);
+                fflush(outStream);
                 shipsLeft[1]--;
                 if (shipsLeft[1] == 0) {
+                    fprintf(outStream, "\tPlayer 1 hit player 2's last ship and won!\n");
+                    fflush(outStream);
                     GAME = OVER;
                     return 1;
                 }
             }
         }
         if(GAME == RUNNING) {
+            fprintf(outStream, "It is Player 2's turn\n");
+            fflush(outStream);
 
             while(playerTurn(2, shipsLeft[0]) == 1) {
+                fprintf(outStream, "\tPlayer 2 hit a ship and there is %d ships remaining\n", shipsLeft[0]);
+                fflush(outStream);
                 shipsLeft[0]--;
                 if (shipsLeft[0] == 0) {
+                    fprintf(outStream, "\tPlayer 2 hit player 1's last ship and won!\n");
+                    fflush(outStream);
                     GAME = OVER;
                     return 2;
                 }
@@ -203,6 +230,7 @@ int playerTurn(int player, int shipsLeft){
     printBoard(player);
     do {
         getCoordinates(shot);
+        //getCoordinatesCursor(shot,player);
     } while (shotLegal(player, shot) != 1);
     if(shootAt(player, shot) == 1) {
         // Boat have been hit
@@ -243,6 +271,117 @@ void getCoordinates(char * shot) {
         } else {
             printf("\nNot a valid input.. \n\n");
         }
+    }
+}
+
+/**
+ * Move the correct cursor with the information from them two strings
+ * @param pStruct The cursor of current player which want to move his cursor
+ */
+void CursorMove(struct cursor_struct *pStruct, const char xstring[3], const char ystring[3]) {
+
+    //Look at x-coordinat
+    if (xstring[0] == '-' && xstring[1] == '1') {
+        if (pStruct->x == 0) {
+            //do nothing because it would result in out of bounce
+        } else {
+            pStruct->x -= 1;
+        }
+    } else if (xstring[0] == '0') {
+        //Do nothing
+    } else if (xstring[0] == '1') {
+        if (pStruct->x >= BOARD_HIGHT - 1) {
+            //do nothing because it would result in out of bounce
+        } else {
+            pStruct->x += 1;
+        }
+
+    } else
+        printf("X coordinat is wrong %s\n", xstring);
+
+    //Look at y-coordinat
+    if (ystring[0] == '-' && ystring[1] == '1') {
+        if (pStruct->y == 0) {
+            //do nothing because it would result in out of bounce
+        } else {
+            pStruct->y -= 1;
+        }
+    } else if (ystring[0] == '0') {
+        //Do nothing
+    } else if (ystring[0] == '1') {
+        if (pStruct->y >= BOARD_WIDTH - 1) {
+            //do nothing because it would result in out of bounce
+        } else {
+            pStruct->y += 1;
+        }
+
+    } else
+        printf("Y coordinat is wrong %s\n", ystring);
+
+    printf("The cursor is updated: "
+           "x->%d , y->%d\n", pStruct->x, pStruct->y);
+
+}
+
+
+/**
+ * Get coordinate input from the keyboard from the user and move the cursor.
+ * @param shot pointer to the shot array.
+ */
+void getCoordinatesCursor(char *shot, int player) {
+    struct cursor_struct *playerCursor;
+    if (player == 1) {
+        //Player 1
+        playerCursor = &cursorP1;
+    } else {
+        //player 2
+        playerCursor = &cursorP2;
+    }
+    while (1) {
+        char x_movement[3] = "-1";
+        char y_movement[3] = "-1";
+        char wantToShot[2] = "0";
+        printf("Move the cursor in the x axis (-1,0 or 1): ");
+
+        do {
+            scanf("%2s", x_movement);
+        } while (strspn(x_movement, "-01") == 0 && strspn(y_movement, "-01") < 3);
+        //strspn returns the amount of occurences of each of the chars passed as the second parameter in x_movement
+#ifndef DEBUG
+        printf("x_movement= %s\n",x_movement);
+#endif
+
+        printf("Move the cursor in the y axis (-1,0 or 1): ");
+        do {
+            scanf("%2s", y_movement);
+        } while (strspn(y_movement, "-01") == 0 && strspn(y_movement, "-01") < 3);
+        //strspn returns the amount of occurences of each of the chars passed as the second parameter in x_movement
+
+#ifndef DEBUG
+        printf("y_movement= %s\n",y_movement);
+#endif
+
+        CursorMove(playerCursor, x_movement, y_movement);
+        printf("You want to shot? (0/1)?");
+        do {
+            scanf("%2s", wantToShot);
+        } while (strspn(wantToShot, "01") == 0 || strspn(wantToShot, "-") > 0);
+
+        if (wantToShot[0] == '1') {
+            //Convert x and y cursor coordinate to chars and check if they are valid
+            shot[0] = (char) (playerCursor->x + 65);
+            shot[1] = (char) (playerCursor->y + 48);
+            printf("\nReceived input was : %c %c\n", shot[0], shot[1]);
+            if (shot[0] >= 'A' && shot[0] <= 'J' && shot[1] >= '0' && shot[1] <= '9') {
+                return;
+            } else {
+                printf("\nNot a valid input.. \n\n");
+                //The cursor must have glitched out, so resetting them should fix it
+                playerCursor->x = 0;
+                playerCursor->y = 0;
+            }
+        }//else reloop the for loop and move the cursor again
+
     }
 }
 

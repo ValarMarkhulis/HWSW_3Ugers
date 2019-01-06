@@ -8,8 +8,8 @@
 #include "Logic.h"
 
 #define SHIPS 5
-extern char zeros[BOARD_HIGHT][BOARD_WITH];
+extern char zeros[BOARD_HIGHT][BOARD_WIDTH];
 
-extern char boards[SHIPS][BOARD_HIGHT][BOARD_WITH];
+extern char boards[SHIPS][BOARD_HIGHT][BOARD_WIDTH];
 
 #endif //BATTELSHIP_SHIPS_H
