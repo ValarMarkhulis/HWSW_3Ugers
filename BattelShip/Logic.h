@@ -37,4 +37,7 @@ struct cursor_struct {
     //int pressed:1;
 } cursorP1, cursorP2;
 
+//Print log
+void printTilLog(char *string);
+
 #endif //BATTELSHIP_LOGIC_H

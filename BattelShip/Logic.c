@@ -169,7 +169,7 @@ void printField(char c) {
 int runGame(FILE *outStreamen) {
     outStream = outStreamen;
     GAME = RUNNING;
-    fprintf(outStream, "Game is setup\n");
+    printTilLog("Game is setup\n");
     fflush(outStream);
     int shipsLeft[2] = {17,17};
 
@@ -183,7 +183,7 @@ int runGame(FILE *outStreamen) {
 
     while(GAME == RUNNING) {
         if(GAME == RUNNING) {
-            fprintf(outStream, "It is Player 1's turn\n");
+            printTilLog( "It is Player 1's turn\n");
             fflush(outStream);
 
             while(playerTurn(1 ,shipsLeft[1]) == 1) {
@@ -191,15 +191,14 @@ int runGame(FILE *outStreamen) {
                 fflush(outStream);
                 shipsLeft[1]--;
                 if (shipsLeft[1] == 0) {
-                    fprintf(outStream, "\tPlayer 1 hit player 2's last ship and won!\n");
-                    fflush(outStream);
+                    printTilLog( "\tPlayer 1 hit player 2's last ship and won!\n");
                     GAME = OVER;
                     return 1;
                 }
             }
         }
         if(GAME == RUNNING) {
-            fprintf(outStream, "It is Player 2's turn\n");
+            printTilLog( "It is Player 2's turn\n");
             fflush(outStream);
 
             while(playerTurn(2, shipsLeft[0]) == 1) {
@@ -207,8 +206,7 @@ int runGame(FILE *outStreamen) {
                 fflush(outStream);
                 shipsLeft[0]--;
                 if (shipsLeft[0] == 0) {
-                    fprintf(outStream, "\tPlayer 2 hit player 1's last ship and won!\n");
-                    fflush(outStream);
+                    printTilLog( "\tPlayer 2 hit player 1's last ship and won!\n");
                     GAME = OVER;
                     return 2;
                 }
@@ -443,3 +441,9 @@ int shootAt(int player, char *shot) {
     }
 
 }
+
+void printTilLog(char *string){
+    fprintf(outStream, string);
+    fflush(outStream);
+}
+
