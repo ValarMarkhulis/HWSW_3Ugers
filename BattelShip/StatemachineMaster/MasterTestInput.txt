@@ -1,0 +1,35 @@
+
+/*
+ * Gennemfør et spil med 2 skud fra masteren, 1 fra slaven og slaven siger SPL og afslutter spillet
+2
+S001STA3
+S002BRT+3
+S003OKK
+S003REG01a2
+1
+S003OKK
+S003REG01a2
+0
+S003SKD01a2
+S003OKK
+1
+S000SPLS
+
+ 
+
+
+Spil med fejl
+2
+S001STA3
+S002BRT+3
+S003OKK
+S003REG01a1
+1
+S003OKK
+S003REG01a2
+0
+S003SKD01a2
+S003OKK
+1
+S000SPLS
+ 
