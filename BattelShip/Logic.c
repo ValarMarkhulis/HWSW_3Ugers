@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <mem.h>
 #include "Logic.h"
-#include "Boards.h"
+#include "Boards/Boards.h"
 #define DEBUG
 char ships[2][BOARD_HIGHT][BOARD_WIDTH];
 char shots[2][BOARD_HIGHT][BOARD_WIDTH];
@@ -14,7 +14,24 @@ FILE *outStream;
  * @param b1 Player one's board choice
  * @param b2 Player two's board choice
  */
-void setupGame(int b1, int b2, FILE *outStream) {
+void setupGame(int b1, int b2, FILE *outStream2) {
+
+    playerInfo.p1Board = -1;
+    playerInfo.p2Board = -1;
+    playerInfo.p1Turns = 0;
+    playerInfo.p2Turns = 0;
+    playerInfo.p1Shots = 0;
+    playerInfo.p2Shots = 0;
+
+    shipsLeft[0] = 17;
+    shipsLeft[1] = 17;
+
+    cursorP1.x = 0;
+    cursorP1.y = 0;
+    cursorP2.x = 0;
+    cursorP2.y = 0;
+
+    outStream = outStream2;
 
     memcpy(shots, zeros, BOARD_WIDTH * BOARD_WIDTH);
     memcpy(shots + 1, zeros, BOARD_WIDTH * BOARD_WIDTH);
@@ -166,27 +183,18 @@ void printField(char c) {
 /**
  * This function starts the game, and when it exits the game is over.
  */
-int runGame(FILE *outStreamen) {
-    outStream = outStreamen;
+ /*
+int runGame() {
     GAME = RUNNING;
     printTilLog("Game is setup\n");
-    fflush(outStream);
-    int shipsLeft[2] = {17,17};
 
-    //Initialize the cursors
-    cursorP1.x = 0;
-    cursorP1.y = 0;
-    //cursorP1.pressed = 0;
-    cursorP2.x = 0;
-    cursorP2.y = 0;
-    //cursorP2.pressed = 0;
 
     while(GAME == RUNNING) {
         if(GAME == RUNNING) {
             printTilLog( "It is Player 1's turn\n");
-            fflush(outStream);
 
-            while(playerTurn(1 ,shipsLeft[1]) == 1) {
+
+            while(playerTurn(shipsLeft[1], NULL, 0) == 1) {
                 fprintf(outStream, "\tPlayer 1 hit a ship and there is %d ships remaining\n", shipsLeft[1]);
                 fflush(outStream);
                 shipsLeft[1]--;
@@ -199,9 +207,8 @@ int runGame(FILE *outStreamen) {
         }
         if(GAME == RUNNING) {
             printTilLog( "It is Player 2's turn\n");
-            fflush(outStream);
 
-            while(playerTurn(2, shipsLeft[0]) == 1) {
+            while(playerTurn(shipsLeft[0], NULL, 0) == 1) {
                 fprintf(outStream, "\tPlayer 2 hit a ship and there is %d ships remaining\n", shipsLeft[0]);
                 fflush(outStream);
                 shipsLeft[0]--;
@@ -215,16 +222,15 @@ int runGame(FILE *outStreamen) {
     }
 
 }
+  */
 
 /**
- * Handels everything that takes a player turn
- * @param player Who is playing? 1 or 2.
+ * Handels shots from This player
  * @return 1 if the player hits a ship else 0.
  */
-int playerTurn(int player, int shipsLeft){
+int playerTurn(char *shot, int player) {
     printf("\n\nPlayer %d: ------------------------------------\n",player);
-    printf("The enemy have %d ship parts left.\n", shipsLeft);
-    char shot[2] = {'0','0'};
+    printf("The enemy have %d ship parts left.\n", shipsLeft[1]);
     printBoard(player);
     do {
         getCoordinates(shot);
@@ -233,14 +239,64 @@ int playerTurn(int player, int shipsLeft){
     if(shootAt(player, shot) == 1) {
         // Boat have been hit
         printf("HIT!\n");
+        if(player == 1) {
+            shipsLeft[1]--;
+        } else {
+            shipsLeft[0]--;
+        }
+
         return 1;
     } else {
         // Splash
         printf("SPLASH!\n");
         return 0;
     }
+}
 
+/**
+ * Handels shots from Other player
+ * @return 1 if the player hits a ship else 0.
+ */
+int OtherplayerTurn(char *shot, int player) {
+    printf("\nPlayer %d: ------------------------------------\n\n\n",player);
 
+    if (shotLegal(player, shot) == 1) {
+        if(shootAt(player, shot) == 1) {
+            // Boat have been hit
+            printf("HIT!\n");
+            if(player == 1) {
+                shipsLeft[1]--;
+            } else {
+                shipsLeft[0]--;
+            }
+            return 1;
+        } else {
+            // Splash
+            printf("SPLASH!\n");
+            return 0;
+        }
+    } else {
+        printf("!!!!!! OtherPlayerTurn Not legeal turn recived..\n");
+        printTilLog("!!!!!! OtherPlayerTurn Not legeal turn recived..\n");
+        return -1;
+    }
+
+}
+
+char checkWinner(int player) {
+    if(player == 1) {
+        if(shipsLeft[1] == 0) {
+            return 'T';
+        } else {
+            return 'F';
+        }
+    } else {
+        if(shipsLeft[0] == 0) {
+            return 'T';
+        } else {
+            return 'F';
+        }
+    }
 }
 
 /**
@@ -447,3 +503,7 @@ void printTilLog(char *string){
     fflush(outStream);
 }
 
+int randomStart() {
+    //FIXME lav mig random..
+    return 1;
+}

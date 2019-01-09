@@ -12,18 +12,33 @@
 
 enum GAMESTATUS{OVER = 0, RUNNING = 1, READY};
 
+int OtherplayerTurn(char *shot, int player);
+char checkWinner(int player);
+
+
+int randomStart();
+struct PlayerInfo {
+    int p1Board;
+    int p2Board;
+    int p1Turns;
+    int p2Turns;
+    int p1Shots;
+    int p2Shots;
+} playerInfo;
+
+int shipsLeft[2];
 
 extern char ships[2][BOARD_WIDTH][BOARD_HIGHT];
 extern char shots[2][BOARD_WIDTH][BOARD_HIGHT];
 
 
-void setupGame(int b1, int b2, FILE *outStream);
+void setupGame(int b1, int b2, FILE *outStream2);
 
 void printBoard(int choice);
 void printField(char c);
 
-int runGame(FILE *outStream);
-int playerTurn(int player, int shipsLeft);
+int runGame();
+int playerTurn(char *shot, int player);
 void getCoordinates(char * shot);
 int shotLegal(int player, char * shot);
 int shootAt(int player, char * shot);

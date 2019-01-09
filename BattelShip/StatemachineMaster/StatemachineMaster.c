@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <mem.h>
 #include <stdlib.h>
-#include "messeages.h"
+#include "../Statemachines/messeages.h"
 
 
 
@@ -100,7 +100,7 @@ int main() {
                 if(strcmp(CMD_struct.cmd , "REG") == 0) {
                     if(CMD_struct.shot[0] == shot[0] && CMD_struct.shot[1] == shot[1] ) {
                         //FIXME Vurder det er Master eller slaves tur nu.
-                        int turn;
+                        //int turn;
                         printf("HIT OR MISS?: ");
                         scanf("%1d",&turn);
                         if(turn == 1) { // HIT
@@ -147,7 +147,7 @@ int main() {
 
                 if(strcmp(CMD_struct.cmd , "OKK") == 0) {
                     //FIXME Vurder det er Master eller slaves tur nu.
-                    int turn;
+                    //int turn;
                     printf("HIT OR MISS?: ");
                     scanf("%1d",&turn);
                     if(turn == 1) { // HIT

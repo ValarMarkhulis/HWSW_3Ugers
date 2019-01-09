@@ -1,21 +1,19 @@
+//
+// Created by Jonas on 09-01-2019.
+//
+#include "Slave.h"
 #include <stdio.h>
 #include <mem.h>
 #include <stdlib.h>
-#include "../Statemachines/messeages.h"
+#include "../messeages.h"
+#include "../../Logic.h"
 
-
-int main() {
+void slave(FILE * outStream) {
     int mode = 0;
-    int p1Board = -1;
-    int p2Board = -1;
-    int p1Turns = 0;
-    int p2Turns = 0;
-    int p1Shots = 0;
-    int p2Shots = 0;
     int p2tempBoard = -1;
     int winner = -1;
 
-    //Player2's incomming shots
+
     char shot[2] = {'a','2'};
 
     while(1) {
@@ -34,8 +32,8 @@ int main() {
                 printf("DEBUG: MODE(0) START (INPUT)\n");
                 do {
                     printf("Input a board ID:");
-                    scanf("%1d", &p2Board);
-                } while (p2Board == -1);
+                    scanf("%1d", &playerInfo.p2Board);
+                } while (playerInfo.p2Board == -1);
                 mode++;
                 break;
 
@@ -44,7 +42,7 @@ int main() {
                 getMsg();
                 checkRecivedMsg();
                 if(strcmp(CMD_struct.cmd, "STA") == 0) {
-                    p1Board = CMD_struct.boardID;
+                    playerInfo.p1Board = CMD_struct.boardID;
                     mode++;
                 } else {
                     printf("!!!!!START MSG RECEIVED WRONG CMD: %s!!!!!\n",CMD_struct.cmd);
@@ -52,7 +50,7 @@ int main() {
 
             case 2: //START MSG
                 printf("DEBUG: MODE(2) START MSG \n");
-                STAmsg('S' , p2Board);
+                STAmsg('S' , playerInfo.p2Board);
                 getMsg();
                 checkRecivedMsg();
 
@@ -65,8 +63,8 @@ int main() {
                 break;
             case 3: //BOARD BESKED
                 printf("DEBUG: MODE(3) BOARD MSG\n");
-                if(p2tempBoard == p2Board){
-                    BRTmsg('S' , p2Board);
+                if(p2tempBoard == playerInfo.p2Board){
+                    BRTmsg('S' , playerInfo.p2Board);
                 }else{
                     BRTmsg('S' , -1);
                 }
@@ -74,17 +72,17 @@ int main() {
                 checkRecivedMsg();
 
                 if(strcmp(CMD_struct.cmd , "TUR") == 0) {
-
+                    setupGame(playerInfo.p1Board, playerInfo.p2Board, outStream);
                     if(CMD_struct.turn_char == 'M'){
-                        p1Shots++;
-                        p1Turns = CMD_struct.shot_number;
+
+                        playerInfo.p1Turns = CMD_struct.shot_number;
                         //Go to TURN M MSG
                         mode++;
 
                     }else if(CMD_struct.turn_char == 'S'){
                         //Go to TURN S MSG
-                        p2Turns = CMD_struct.shot_number;
-                        p2Shots++;
+                        playerInfo.p2Turns = CMD_struct.shot_number;
+                        playerInfo.p2Shots++;
                         //mode = 6
                         //TODO Test this plz
                     }else{
@@ -107,11 +105,12 @@ int main() {
                     //Save the recieved shots from MASTER
                     shot[0] = CMD_struct.shot[0];
                     shot[1] = CMD_struct.shot[1];
-
-                    if (CMD_struct.shot_number != p1Shots) {
-                        printf("!!!!! SLAVE HAD WRONG SHOT COUNT FOR P1: %d != %d!!!!!!\n", CMD_struct.shot_number, p1Shots);
+                    OtherplayerTurn(shot, 1);
+                    playerInfo.p1Shots++;
+                    if (CMD_struct.shot_number != playerInfo.p1Shots) {
+                        printf("!!!!! SLAVE HAD WRONG SHOT COUNT FOR P1: %d != %d!!!!!!\n", CMD_struct.shot_number, playerInfo.p1Shots);
+                        playerInfo.p1Shots = CMD_struct.shot_number;
                     }
-                    p2Shots = CMD_struct.shot_number;
                     mode++;
                 }else{
                     printf("!!!!!OKK MSG RECEIVED WRONG CMD: %s!!!!!\n",CMD_struct.cmd);
@@ -120,7 +119,7 @@ int main() {
                 break;
             case 5: // REG MSG
                 printf("DEBUG: MODE(5) REG MSG \n");
-                REGmsg('S' , p2Shots,shot);
+                REGmsg('S' , playerInfo.p1Shots,shot);
                 getMsg();
                 checkRecivedMsg();
 
@@ -128,7 +127,6 @@ int main() {
                     if(CMD_struct.turn_char == 'M'){
                         if(CMD_struct.winner == 'F'){
                             mode = 4;
-                            p1Shots++;
                         }else if(CMD_struct.winner == 'T'){
                             mode = 8;
                             winner = 1;
@@ -136,7 +134,7 @@ int main() {
                             printf("!!!!!REG MSG RECEIVED WINNER was recieved: %c!!!!!\n",CMD_struct.winner);
                         }
                     }else if(CMD_struct.turn_char == 'S'){
-                        p2Turns++;
+                        playerInfo.p2Turns++;
                         mode++;
 
                     }else{
@@ -149,8 +147,9 @@ int main() {
 
             case 6: // SHOT S MSG
                 printf("DEBUG: MODE(6) SHOT S MSG \n");
-                char shot[2] = {'a','2'};
-                SKDmsg('S' , p2Shots,shot); //FIXME Lave det får input til skud..
+                playerTurn(shot, 2);  // FIXME ryk noget af mig lidt ned, til vi får svaret og sammenligner.
+                playerInfo.p2Shots++;
+                SKDmsg('S' , playerInfo.p2Shots, shot);
                 getMsg();
                 checkRecivedMsg();
 
@@ -173,14 +172,13 @@ int main() {
                     if(CMD_struct.turn_char == 'M'){
                         if(CMD_struct.winner == 'F'){
                             mode = 4;
-                            p1Shots++;
+                            playerInfo.p1Turns++;
                         }else{
                             printf("!!!!!OKK MSG RECEIVED M%c, which is not legal!!!!!\n",CMD_struct.winner);
                         }
                     }else if(CMD_struct.turn_char == 'S'){
                         if(CMD_struct.winner == 'F') {
                             mode = 6;
-                            p2Shots++;
                         }else if(CMD_struct.winner == 'T') {
                             winner = 2;
                             mode = 8;
@@ -210,9 +208,9 @@ int main() {
                 break;
 
             default:
-                return 0;
+                return;
                 break;
         }
     }
-    return 0;
+    return;
 }

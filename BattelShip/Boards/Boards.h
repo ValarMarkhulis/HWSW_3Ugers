@@ -5,7 +5,7 @@
 #ifndef BATTELSHIP_SHIPS_H
 #define BATTELSHIP_SHIPS_H
 
-#include "Logic.h"
+#include "../Logic.h"
 
 #define SHIPS 5
 extern char zeros[BOARD_HIGHT][BOARD_WIDTH];
