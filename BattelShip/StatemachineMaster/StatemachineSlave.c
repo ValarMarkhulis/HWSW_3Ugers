@@ -1,32 +1,8 @@
 #include <stdio.h>
 #include <mem.h>
 #include <stdlib.h>
+#include "messeages.h"
 
-void STAmsg(int input);
-void BRTmsg(int boardNr);
-void SKDmsg(int skudNr, char * shot);
-void SPLmsg(char MorS);
-void REGmsg(int skudNr, char * shot);
-void OKKmsg();
-
-void getMsg();
-
-void checkRecivedMsg();
-
-int msgID = 0;
-char ReciveString[12];
-char SendString[12];
-
-struct CMD{
-    char sender;
-    int msgID;
-    char cmd[3];
-    int boardID;
-    char shot[2];
-    char turn_char;
-    char winner;
-    int shot_number;
-}CMD_struct;
 
 int main() {
     int mode = 0;
@@ -55,7 +31,7 @@ int main() {
 
         switch (mode) {
             case 0: //Start (input)
-                printf("DEBUG: START (INPUT)\n");
+                printf("DEBUG: MODE(0) START (INPUT)\n");
                 do {
                     printf("Input a board ID:");
                     scanf("%1d", &p2Board);
@@ -64,7 +40,7 @@ int main() {
                 break;
 
             case 1: // Wait
-                printf("DEBUG: WAIT MSG \n");
+                printf("DEBUG: MODE(1) WAIT MSG \n");
                 getMsg();
                 checkRecivedMsg();
                 if(strcmp(CMD_struct.cmd, "STA") == 0) {
@@ -75,8 +51,8 @@ int main() {
                 }
 
             case 2: //START MSG
-                printf("DEBUG: START MSG \n");
-                STAmsg(p2Board);
+                printf("DEBUG: MODE(2) START MSG \n");
+                STAmsg('S' , p2Board);
                 getMsg();
                 checkRecivedMsg();
 
@@ -88,11 +64,11 @@ int main() {
                 }
                 break;
             case 3: //BOARD BESKED
-                printf("DEBUG: BOARD MSG\n");
+                printf("DEBUG: MODE(3) BOARD MSG\n");
                 if(p2tempBoard == p2Board){
-                    BRTmsg(p2Board);
+                    BRTmsg('S' , p2Board);
                 }else{
-                    BRTmsg(-1);
+                    BRTmsg('S' , -1);
                 }
                 getMsg();
                 checkRecivedMsg();
@@ -123,7 +99,7 @@ int main() {
 
                 break;
             case 4: //OKK MSG
-                printf("DEBUG: OKK MSG!\n");
+                printf("DEBUG: MODE(4) OKK MSG!\n");
                 OKKmsg();
                 getMsg();
                 checkRecivedMsg();
@@ -143,8 +119,8 @@ int main() {
 
                 break;
             case 5: // REG MSG
-                printf("DEBUG: REG MSG \n");
-                REGmsg(p2Shots,shot);
+                printf("DEBUG: MODE(5) REG MSG \n");
+                REGmsg('S' , p2Shots,shot);
                 getMsg();
                 checkRecivedMsg();
 
@@ -172,9 +148,9 @@ int main() {
                 break;
 
             case 6: // SHOT S MSG
-                printf("DEBUG: SHOT S MSG \n");
+                printf("DEBUG: MODE(6) SHOT S MSG \n");
                 char shot[2] = {'a','2'};
-                SKDmsg(p2Shots,shot); //FIXME Lave det får input til skud..
+                SKDmsg('S' , p2Shots,shot); //FIXME Lave det får input til skud..
                 getMsg();
                 checkRecivedMsg();
 
@@ -189,7 +165,7 @@ int main() {
                 }
                 break;
             case 7: //OKK MSG
-                printf("DEBUG: OKK MSG!\n");
+                printf("DEBUG: MODE(7) OKK MSG!\n");
                 OKKmsg();
                 getMsg();
                 checkRecivedMsg();
@@ -221,14 +197,15 @@ int main() {
                 break;
 
             case 8: //Slut spil
+                printf("DEBUG: MODE(8) GAME OVER MSG!\n");
                 if(winner == 1) {
-                    SPLmsg('M');
+                    SPLmsg('S' , 'M');
                 } else if( winner == 2) {
-                    SPLmsg('S');
+                    SPLmsg('S' , 'S');
                 } else {
                     printf("!!!!! END GAME HAVE WRONG WINNER!!!!%d\n",winner);
                 }
-                printf("DEBUG: Game over, someone won!\n\n");
+                printf("DEBUG: Game over, Player %d won!\n\n",winner);
                 mode = 0;
                 break;
 
@@ -238,103 +215,4 @@ int main() {
         }
     }
     return 0;
-}
-
-void checkRecivedMsg() {
-    CMD_struct.sender = ReciveString[0];
-
-    char Strings[3];
-    for (int i = 0; i < 3; i++) {
-        Strings[i] = ReciveString[i+1];
-    }
-    CMD_struct.msgID = atoi(Strings);
-    for (int i = 0; i < 3; i++) {
-        Strings[i] = ReciveString[i+4];
-    }
-    strcpy( CMD_struct.cmd, Strings );
-    printf("CMD i struckt er nu: %s \n",Strings);
-
-    if(strcmp(CMD_struct.cmd,"STA") == 0){
-        //printf("test\n");
-        char temp = ReciveString[7];
-        CMD_struct.boardID = atoi(&temp);
-
-
-    }else if(strcmp(CMD_struct.cmd,"BRT") == 0){
-        char temp_sign = ReciveString[7];
-        char temp = ReciveString[8];
-        if(temp_sign == '-'){
-            CMD_struct.boardID = -1;
-        }else if(temp_sign == '+'){
-            CMD_struct.boardID = atoi(&temp);
-        }else{
-            printf("!!!!!!THE BRT COMMAND WAS RECIEVED, BUT SOMETHING WENT WRONG WITH THE BOARD NUMBER!!!!!!!\n");
-        }
-
-
-    }else if(strcmp(CMD_struct.cmd,"TUR") == 0){
-        char temp_int[2];
-        for (int i = 0; i < 2; i++) {
-            temp_int[i] = ReciveString[i+7];
-        }
-        CMD_struct.shot_number = atoi(temp_int);
-        CMD_struct.turn_char = ReciveString[9];
-        CMD_struct.winner   =  ReciveString[10];
-
-    }else if(strcmp(CMD_struct.cmd,"SPL") == 0){
-        CMD_struct.winner = ReciveString[7];
-
-    }else if(strcmp(CMD_struct.cmd,"REG") == 0 || strcmp(CMD_struct.cmd,"SKD") == 0){
-        char tempTurn[2];
-        for (int i = 0; i < 2; i++) {
-            tempTurn[0] = ReciveString[i+7];
-        }
-        CMD_struct.shot_number = atoi(tempTurn);
-        CMD_struct.shot[0] = ReciveString[9];
-        CMD_struct.shot[1] = ReciveString[10];
-
-    }else if(strcmp(CMD_struct.cmd,"OKK") == 0){
-
-    } else {
-        printf("!!!!!RECEIVED A COMMAND THAT DOES NOT EXIST!!!!!!\n");
-    }
-
-}
-//FIXME Don't overflow (999) msgID
-
-// FIXME Send MASTER / SLAVE videre til alle messeage beskeder!!.
-void getMsg() {
-    scanf("%11s", ReciveString);
-    printf("getMsg modtog: \"%s\"\n",ReciveString);
-}
-
-//Messages
-void STAmsg(int boardNr) {
-    printf("S%03dSTA%d   \n",msgID++,boardNr);
-}
-
-void BRTmsg(int boardNr) {
-    //TODO Når det skal sendes som en char, skal -/+ deles op som sin egen char
-    if(boardNr > 0){
-        printf("S%03dBRT+%d   \n",msgID++,boardNr);
-    }else{
-        printf("S%03dBRT-1   \n",msgID++);
-    }
-}
-
-void SKDmsg(int skudNr, char *shot) {
-    printf("S%03dSKD%02d%c%c\n",msgID++,skudNr,shot[0],shot[1]);
-}
-
-void SPLmsg(char MorS) {
-    printf("S%03dSPL%c   \n",msgID++,MorS);
-}
-
-
-void OKKmsg() {
-    printf("S%03dOKK    \n",msgID++);
-}
-
-void REGmsg(int skudNr, char *shot) {
-    printf("S%03dREG%02d%c%c\n",msgID++,skudNr,shot[0],shot[1]);
 }
