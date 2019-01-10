@@ -69,6 +69,8 @@ void master(FILE *outStream2) {
                             // P1's tur
                             mode++;
                             playerInfo.p1Turns++;
+                            //FIXME Fjern denne printboard linje:
+                            printBoard(1);
                         } else {
                             // P2's tur
                             mode = 5;
