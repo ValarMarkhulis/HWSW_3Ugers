@@ -14,6 +14,7 @@ int main() {
     outStream = fopen(LOG_FILE_NAME, "w");
     printTilLog("Start of logfile\n");
 
+    //master(outStream);
     slave(outStream);
 
 

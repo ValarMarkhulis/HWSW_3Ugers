@@ -23,8 +23,8 @@ void setupGame(int b1, int b2, FILE *outStream2) {
     playerInfo.p1Shots = 0;
     playerInfo.p2Shots = 0;
 
-    shipsLeft[0] = 17;
-    shipsLeft[1] = 17;
+    shipsLeft[0] = 24;
+    shipsLeft[1] = 24;
 
     cursorP1.x = 0;
     cursorP1.y = 0;

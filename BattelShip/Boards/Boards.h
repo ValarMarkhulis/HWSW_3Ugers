@@ -7,7 +7,7 @@
 
 #include "../Logic.h"
 
-#define SHIPS 5
+#define SHIPS 11
 extern char zeros[BOARD_HIGHT][BOARD_WIDTH];
 
 extern char boards[SHIPS][BOARD_HIGHT][BOARD_WIDTH];
